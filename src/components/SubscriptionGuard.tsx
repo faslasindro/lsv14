@@ -42,7 +42,46 @@ const getBillingPeriodText = () => {
         return `${startFormatted} – ${endFormatted}`;
     }
   };
-@@ .. @@
+
+  // Show trial expiry warning (only for trials, not cancelled subscriptions)
+  if (subscriptionData?.hasAccess && 
+      subscriptionData?.subscription?.plan_type === 'trial' && 
+      subscriptionData?.daysRemaining !== undefined && 
+      subscriptionData?.daysRemaining <= 7 &&
+      !subscriptionData?.isCancelled) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Trial Warning Banner */}
+        <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white p-4">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Clock className="h-5 w-5" />
+              <span className="font-medium">
+                {subscriptionData.daysRemaining > 0 
+                  ? `Your trial expires in ${subscriptionData.daysRemaining} days`
+                  : 'Your trial has expired'
+                }
+              </span>
+            </div>
+            <button
+              onClick={handleUpgrade}
+              className="bg-white text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors flex items-center gap-2"
+            >
+              Upgrade Now
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        {children}
+      </div>
+    );
+  }
+
+  // Remove the persistent cancellation banner - users can resubscribe from billing page instead
+
+  return <>{children}</>;
+};
+
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Billing Period</span>
                 <span className={`font-semibold text-sm ${
